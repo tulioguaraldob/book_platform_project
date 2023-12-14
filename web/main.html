@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Store</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="book" id="book">
+
+    </div>
+</body>
+
+<script>
+    // const url = "http://localhost:8000/book";
+    const url = "https://8000-tulioguaral-bookplatfor-5vwmtyuenxp.ws-us106.gitpod.io/book";
+
+    $(document).ready(
+        $.ajax({
+            url: url,
+            method: "GET",
+            dataType: "json",
+            success: ((res) => {
+                let books = [];
+                let bookHtml = "";
+                for (let i = 0; i < res.length; i++) {
+                    bookHtml = "<h1>" + res[i].id + "</h1>"
+                        + " <h2>" + res[i].title + "</h2>"
+                        + " <h2>" + res[i].author + "</h2>"
+                        + " <h3>" + res[i].created_at + "</h3>"
+
+                    $("#book").append(bookHtml);
+                }
+                console.log(res);
+            }),
+        })
+    );
+</script>
+
+</html>
