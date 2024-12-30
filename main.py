@@ -1,33 +1,28 @@
-from db.database import start_db
-from repo.book_repo import BookRepo
-from srvc.book_srvc import BookSrvc
-from controllers.book_controller import BookController
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Depends
+from application.api.v1.routers import book_router
+from infrastructure.repositories.mysql_repository import MySQLBookRepository
+from infrastructure.repositories.redis_cache import RedisCache
+import logging
 
 app = FastAPI()
+logger = logging.getLogger(__name__)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins="*",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+logger.info("Attempting to connect to MySQL Server database")
 
-# Db
-db, cursor = start_db()
+def get_mysql_repository():
+    db_url = "mysql://root:root@127.0.0.1:3306/books"  # Replace with your actual database URL
+    return MySQLBookRepository(db_url)
 
-# Repo
-book_repo = BookRepo(db, cursor)
+logger.info("Attempting to connect to Redis cache")
 
-# Srvc
-book_srvc = BookSrvc(book_repo)
+def get_redis_cache():
+    redis_url = "redis://localhost:6379"  # Replace with your actual Redis URL
+    return RedisCache(redis_url)
 
-# Controllers
-book_controller = BookController(book_srvc)
+app.include_router(book_router.get_router(), dependencies=[Depends(get_mysql_repository)])
 
-# Handlers
-@app.get("/book")
-async def get_all_books():
-    return await book_controller.get_all_books()
+# ... (Optional: Add caching logic using RedisCache)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

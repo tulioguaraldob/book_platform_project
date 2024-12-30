@@ -1,3 +1,5 @@
 fastapi
-uvicorn
-py-postgresql
+uvicorn[standard]
+sqlalchemy
+mysql-connector-python
+redis
