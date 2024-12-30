@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POST Request Example</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <form id="account-form" class="account-form">
+        <h2>Register Account</h2>
+        <input placeholder="Enter Holder name" type="text" name="holder" id="holder" />
+        <input placeholder="Enter Balance value" type="number" name="balance" id="balance" />
+        <button type="submit">REGISTER</button>
+    </form>
+</body>
+
+<script>
+    const url = "https://8000-tulioguaral-bookplatfor-ogcyobr9sly.ws-us117.gitpod.io";
+    const form = document.getElementById("account-form");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const holderInput = document.getElementById("holder");
+        const balanceInput = document.getElementById("balance");
+
+        const holder = holderInput.value;
+        const balance = balanceInput.value;
+        const newAccount = {
+            holder: holder,
+            balance: parseFloat(balance)
+        };
+
+        console.log("New account:");
+        console.log(newAccount);
+
+        const jsonBody = JSON.stringify(newAccount);
+        console.log("New account JSON:");
+        console.log(jsonBody);
+
+        try {
+            const resp = await fetch(`${url}/contas`, {
+                body: jsonBody,
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            if (!resp.ok) {
+                throw new Error(`Error: ${resp.status}`);
+            }
+
+            const responseData = await resp.json();
+            console.log(responseData);
+        } catch (error) {
+            console.error(`Error: ${error}`);
+        }
+    });
+</script>
+
+</html>
